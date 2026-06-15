@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacy First – Stakeholder Wheels | The Progression Collaborative</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+  background: #EEF4ED;
+  color: #3D3D3D;
+  min-height: 100vh;
+  padding: 32px 16px 64px;
+}
+.app { max-width: 960px; margin: 0 auto; }
+.tpc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #A3C4A0;
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.tpc-name { font-size: 17px; font-weight: 700; color: #3A5A40; }
+.tpc-tag { font-size: 10px; color: #588157; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
+.header-title { font-size: 19px; font-weight: 700; color: #3A5A40; }
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 9px 20px;
+  border: 1.5px solid #A3C4A0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  background: white;
+  color: #588157;
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+  transition: all 0.15s;
+}
+.tab:hover { background: #EEF4ED; }
+.tab.active { background: #588157; color: white; border-color: #588157; }
+.tab.summary-tab { border-color: #3A5A40; color: #3A5A40; }
+.tab.summary-tab.active { background: #3A5A40; color: white; border-color: #3A5A40; }
+.wheel-page { display: none; }
+.wheel-page.active { display: block; }
+.page-title { font-size: 20px; font-weight: 700; color: #3A5A40; margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: #588157; margin-bottom: 22px; line-height: 1.5; }
+.wheel-layout {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.slider-panel { flex: 1 1 260px; display: flex; flex-direction: column; gap: 14px; }
+.seg-row { display: flex; flex-direction: column; gap: 2px; }
+.seg-label { font-size: 13px; font-weight: 700; color: #3A5A40; }
+.seg-desc { font-size: 11px; color: #588157; margin-bottom: 3px; line-height: 1.4; }
+.slider-row { display: flex; align-items: center; gap: 10px; }
+input[type=range] { flex: 1; accent-color: #588157; cursor: pointer; }
+.score-num { font-size: 15px; font-weight: 700; color: #3A5A40; min-width: 20px; text-align: right; }
+.avg-line { font-size: 14px; color: #3A5A40; margin: 20px 0 8px; }
+.avg-line strong { font-size: 22px; }
+.meta-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.meta-field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 140px; }
+.meta-field label { font-size: 10px; color: #588157; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.meta-field input {
+  border: 1.5px solid #A3C4A0;
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+  color: #3D3D3D;
+  background: white;
+  outline: none;
+}
+.meta-field input:focus { border-color: #588157; }
+.notice {
+  background: white;
+  border: 1.5px solid #A3C4A0;
+  border-radius: 7px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #3A5A40;
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+.compare-wrap {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #3D3D3D; }
+.legend-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.summary-card {
+  background: white;
+  border: 1.5px solid #A3C4A0;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.summary-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #3A5A40;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #EEF4ED;
+  padding-bottom: 8px;
+}
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 0.5px solid #EEF4ED;
+  font-size: 12px;
+}
+.summary-item:last-child { border-bottom: none; }
+.summary-dim { color: #3D3D3D; flex: 1; line-height: 1.35; }
+.summary-score { font-weight: 700; min-width: 24px; text-align: right; font-size: 14px; }
+.align-section { margin-top: 8px; }
+.align-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3A5A40;
+  margin-bottom: 14px;
+  padding-top: 20px;
+  border-top: 2px solid #A3C4A0;
+}
+.align-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  background: white;
+  border: 1px solid #A3C4A0;
+  border-radius: 7px;
+  padding: 12px 14px;
+}
+.align-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 4px;
+  white-space: nowrap;
+  align-self: flex-start;
+  margin-top: 1px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tag-agree { background: #EEF4ED; color: #3A5A40; }
+.tag-gap { background: #FDECEA; color: #8B1A1A; }
+.tag-opportunity { background: #FFF8E6; color: #7D5A00; }
+.align-content { font-size: 13px; color: #3D3D3D; line-height: 1.6; flex: 1; }
+.align-content strong { color: #3A5A40; }
+.print-btn {
+  display: inline-block;
+  margin-top: 32px;
+  padding: 10px 26px;
+  background: #588157;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.print-btn:hover { background: #3A5A40; }
+canvas { display: block; }
+footer {
+  margin-top: 48px;
+  padding-top: 14px;
+  border-top: 1px solid #A3C4A0;
+  font-size: 11px;
+  color: #588157;
+}
+@media (max-width: 600px) {
+  .tpc-header { flex-direction: column; align-items: flex-start; }
+  .header-title { font-size: 16px; }
+  .wheel-layout { flex-direction: column; }
+}
+@media print {
+  body { background: white; }
+  .tab-bar, .print-btn { display: none; }
+  .wheel-page { display: block !important; page-break-after: always; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="tpc-header">
+    <div>
+      <div class="tpc-name">The Progression Collaborative</div>
+      <div class="tpc-tag">Leadership · Culture · Performance</div>
+    </div>
+    <div class="header-title">Pharmacy First – Stakeholder Wheels</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('gp', this)">General Practice</button>
+    <button class="tab" onclick="switchTab('pharmacy', this)">Community Pharmacy</button>
+    <button class="tab" onclick="switchTab('patient', this)">Patient</button>
+    <button class="tab summary-tab" onclick="switchTab('summary', this)">&#8853; Summary &amp; Comparison</button>
+  </div>
+
+  <!-- GP -->
+  <div id="page-gp" class="wheel-page active">
+    <div class="page-title">General Practice</div>
+    <div class="page-sub">How well is Pharmacy First working from your team's perspective? Score each dimension honestly from 1 (significant room to grow) to 10 (working really well).</div>
+    <div class="meta-row">
+      <div class="meta-field"><label>Practice name</label><input type="text" placeholder="Your practice"></div>
+      <div class="meta-field"><label>Name</label><input type="text" placeholder="Your name"></div>
+      <div class="meta-field"><label>Role</label><input type="text" placeholder="Your role"></div>
+      <div class="meta-field"><label>Date</label><input type="date" id="date-gp"></div>
+    </div>
+    <div class="wheel-layout">
+      <canvas id="canvas-gp" width="340" height="340"></canvas>
+      <div class="slider-panel" id="sliders-gp"></div>
+    </div>
+    <div class="avg-line" id="avg-gp">Overall average: <strong>5.0</strong> / 10</div>
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <!-- Pharmacy -->
+  <div id="page-pharmacy" class="wheel-page">
+    <div class="page-title">Community Pharmacy</div>
+    <div class="page-sub">How well is Pharmacy First working from your pharmacy's perspective? Score each dimension honestly from 1 (significant room to grow) to 10 (working really well).</div>
+    <div class="meta-row">
+      <div class="meta-field"><label>Pharmacy name</label><input type="text" placeholder="Your pharmacy"></div>
+      <div class="meta-field"><label>Name</label><input type="text" placeholder="Your name"></div>
+      <div class="meta-field"><label>Role</label><input type="text" placeholder="Your role"></div>
+      <div class="meta-field"><label>Date</label><input type="date" id="date-pharmacy"></div>
+    </div>
+    <div class="wheel-layout">
+      <canvas id="canvas-pharmacy" width="340" height="340"></canvas>
+      <div class="slider-panel" id="sliders-pharmacy"></div>
+    </div>
+    <div class="avg-line" id="avg-pharmacy">Overall average: <strong>5.0</strong> / 10</div>
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <!-- Patient -->
+  <div id="page-patient" class="wheel-page">
+    <div class="page-title">Patient</div>
+    <div class="page-sub">How well is Pharmacy First working for you? Score each dimension honestly from 1 (not at all) to 10 (really well).</div>
+    <div class="meta-row">
+      <div class="meta-field"><label>Name (optional)</label><input type="text" placeholder="Your name"></div>
+      <div class="meta-field"><label>Date</label><input type="date" id="date-patient"></div>
+    </div>
+    <div class="wheel-layout">
+      <canvas id="canvas-patient" width="340" height="340"></canvas>
+      <div class="slider-panel" id="sliders-patient"></div>
+    </div>
+    <div class="avg-line" id="avg-patient">Overall average: <strong>5.0</strong> / 10</div>
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <!-- Summary -->
+  <div id="page-summary" class="wheel-page">
+    <div class="page-title">Summary &amp; Comparison</div>
+    <div class="page-sub">A composite view of all three stakeholder perspectives. Complete the individual wheels first, then return here to see where groups align and where gaps exist.</div>
+    <div class="notice">This view updates automatically from the scores entered in each stakeholder wheel above. The analysis below surfaces areas of shared strength, misalignment and opportunity for the programme to address.</div>
+    <div class="compare-wrap">
+      <canvas id="canvas-compare" width="360" height="360"></canvas>
+      <div style="flex:1 1 260px;">
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#588157;"></div>General Practice</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#3A5A40;"></div>Community Pharmacy</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#A3C4A0;border:1px solid #588157;"></div>Patient</div>
+        </div>
+        <div class="summary-cards" id="summary-cards"></div>
+      </div>
+    </div>
+    <div class="align-section">
+      <div class="align-title">Areas of alignment, gap and opportunity</div>
+      <div id="alignment-output"></div>
+    </div>
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <footer>
+    theprogressioncollaborative.co.uk &nbsp;·&nbsp; phil@theprogressioncollaborative.co.uk &nbsp;·&nbsp; Pharmacy First Improvement Programme
+  </footer>
+
+</div>
+
+<script>
+(function() {
+
+var GROUPS = {
+  gp: {
+    stroke: '#588157',
+    fill: 'rgba(88,129,87,0.18)',
+    segments: [
+      { name: 'Referral confidence',   desc: 'How confident is your team routing patients to Pharmacy First?' },
+      { name: 'Rejection rate',        desc: 'How well are referrals being accepted and followed through?' },
+      { name: 'Workload relief',       desc: 'How much is Pharmacy First reducing GP appointment demand?' },
+      { name: 'Communication',         desc: 'How well does information flow between practice and pharmacy?' },
+      { name: 'Staff awareness',       desc: 'How knowledgeable is your team about Pharmacy First pathways?' },
+      { name: 'Patient feedback',      desc: 'How positively do patients report back about pharmacy interactions?' },
+      { name: 'System relationships',  desc: 'How strong is the working relationship with local pharmacies?' },
+      { name: 'Sustainability',        desc: 'How embedded and sustainable does Pharmacy First feel in your practice?' }
+    ]
+  },
+  pharmacy: {
+    stroke: '#3A5A40',
+    fill: 'rgba(58,90,64,0.18)',
+    segments: [
+      { name: 'Referral volume',       desc: 'Are you receiving a sufficient and consistent flow of referrals?' },
+      { name: 'Clinical confidence',   desc: 'How confident do pharmacists feel managing Pharmacy First conditions?' },
+      { name: 'Revenue & viability',   desc: 'Is Pharmacy First generating meaningful revenue for the pharmacy?' },
+      { name: 'GP communication',      desc: 'How well does information flow between pharmacy and the practice?' },
+      { name: 'Patient experience',    desc: 'How positive is the patient experience when they arrive at pharmacy?' },
+      { name: 'Staff capacity',        desc: 'Do you have the staff capacity to deliver Pharmacy First well?' },
+      { name: 'Pathway clarity',       desc: 'Are the Pharmacy First pathways clear and consistently followed?' },
+      { name: 'System relationships',  desc: 'How strong is the working relationship with local GP practices?' }
+    ]
+  },
+  patient: {
+    stroke: '#7aab77',
+    fill: 'rgba(163,196,160,0.25)',
+    segments: [
+      { name: 'Awareness',             desc: 'Did you know Pharmacy First existed before you needed it?' },
+      { name: 'Access & convenience',  desc: 'Was it easy to access care through a pharmacy?' },
+      { name: 'Wait time',             desc: 'Were you seen quickly enough for your needs?' },
+      { name: 'Quality of care',       desc: 'Did you feel well cared for by the pharmacist?' },
+      { name: 'Explanation & advice',  desc: 'Did the pharmacist explain things clearly?' },
+      { name: 'Trust in pharmacy',     desc: 'Did you feel confident in the pharmacy as a clinical setting?' },
+      { name: 'Outcome satisfaction',  desc: 'Did the visit resolve your problem or point you in the right direction?' },
+      { name: 'Would recommend',       desc: 'Would you choose Pharmacy First again or suggest it to others?' }
+    ]
+  }
+};
+
+var scores = {
+  gp:       [5,5,5,5,5,5,5,5],
+  pharmacy: [5,5,5,5,5,5,5,5],
+  patient:  [5,5,5,5,5,5,5,5]
+};
+
+var N = 8;
+var startOff = -Math.PI / 2;
+var slice = (2 * Math.PI) / N;
+
+function wheelParams(canvasId) {
+  var c = document.getElementById(canvasId);
+  var w = c.width, h = c.height;
+  return { cx: w/2, cy: h/2, maxR: Math.min(w,h)/2 - 50 };
+}
+
+function buildSliders(key) {
+  var container = document.getElementById('sliders-' + key);
+  GROUPS[key].segments.forEach(function(seg, i) {
+    var row = document.createElement('div');
+    row.className = 'seg-row';
+    var lbl = document.createElement('div'); lbl.className = 'seg-label'; lbl.textContent = seg.name;
+    var dsc = document.createElement('div'); dsc.className = 'seg-desc'; dsc.textContent = seg.desc;
+    var sr  = document.createElement('div'); sr.className = 'slider-row';
+    var inp = document.createElement('input');
+    inp.type = 'range'; inp.min = 1; inp.max = 10; inp.value = 5;
+    var num = document.createElement('div'); num.className = 'score-num'; num.id = 'sd-'+key+'-'+i; num.textContent = '5';
+    (function(k, idx) {
+      inp.addEventListener('input', function() {
+        scores[k][idx] = parseInt(this.value);
+        num.textContent = this.value;
+        drawWheel(k);
+        updateAvg(k);
+      });
+    })(key, i);
+    sr.appendChild(inp); sr.appendChild(num);
+    row.appendChild(lbl); row.appendChild(dsc); row.appendChild(sr);
+    container.appendChild(row);
+  });
+}
+
+function updateAvg(key) {
+  var sum = scores[key].reduce(function(a,b){return a+b;},0);
+  document.getElementById('avg-'+key).querySelector('strong').textContent = (sum/N).toFixed(1);
+}
+
+function drawWheel(key) {
+  var canvas = document.getElementById('canvas-'+key);
+  if (!canvas) return;
+  var p = wheelParams('canvas-'+key);
+  var ctx = canvas.getContext('2d');
+  var g = GROUPS[key];
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for (var r=1; r<=10; r++) {
+    ctx.beginPath();
+    ctx.arc(p.cx, p.cy, (r/10)*p.maxR, 0, 2*Math.PI);
+    ctx.strokeStyle = r%2===0 ? 'rgba(88,129,87,0.2)' : 'rgba(163,196,160,0.12)';
+    ctx.lineWidth = 1; ctx.stroke();
+  }
+  for (var i=0; i<N; i++) {
+    ctx.beginPath(); ctx.moveTo(p.cx, p.cy);
+    ctx.lineTo(p.cx + p.maxR*Math.cos(startOff+i*slice), p.cy + p.maxR*Math.sin(startOff+i*slice));
+    ctx.strokeStyle = 'rgba(88,129,87,0.25)'; ctx.lineWidth = 1; ctx.stroke();
+  }
+
+  ctx.beginPath();
+  for (var i=0; i<N; i++) {
+    var ang = startOff + i*slice + slice/2;
+    var rad = (scores[key][i]/10)*p.maxR;
+    var x = p.cx + rad*Math.cos(ang), y = p.cy + rad*Math.sin(ang);
+    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = g.fill; ctx.fill();
+  ctx.strokeStyle = g.stroke; ctx.lineWidth = 2.5; ctx.stroke();
+
+  for (var i=0; i<N; i++) {
+    var ang = startOff + i*slice + slice/2;
+    var rad = (scores[key][i]/10)*p.maxR;
+    var x = p.cx + rad*Math.cos(ang), y = p.cy + rad*Math.sin(ang);
+    ctx.beginPath(); ctx.arc(x,y,4,0,2*Math.PI);
+    ctx.fillStyle = g.stroke; ctx.fill();
+    ctx.strokeStyle = '#EEF4ED'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  var lr = p.maxR + 38;
+  GROUPS[key].segments.forEach(function(seg, i) {
+    var ang = startOff + i*slice + slice/2;
+    var x = p.cx + lr*Math.cos(ang), y = p.cy + lr*Math.sin(ang);
+    ctx.font = 'bold 9px Arial,sans-serif'; ctx.fillStyle = '#3A5A40';
+    var words = seg.name.split(' ');
+    if (words.length > 2) {
+      var m = Math.ceil(words.length/2);
+      ctx.fillText(words.slice(0,m).join(' '), x, y-6);
+      ctx.fillText(words.slice(m).join(' '), x, y+6);
+    } else if (words.length===2) {
+      ctx.fillText(words[0], x, y-6); ctx.fillText(words[1], x, y+6);
+    } else {
+      ctx.fillText(words[0], x, y);
+    }
+  });
+  ctx.beginPath(); ctx.arc(p.cx,p.cy,3,0,2*Math.PI); ctx.fillStyle='#3A5A40'; ctx.fill();
+}
+
+function drawCompare() {
+  var canvas = document.getElementById('canvas-compare');
+  if (!canvas) return;
+  var p = wheelParams('canvas-compare');
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for (var r=1; r<=10; r++) {
+    ctx.beginPath(); ctx.arc(p.cx,p.cy,(r/10)*p.maxR,0,2*Math.PI);
+    ctx.strokeStyle = r%2===0 ? 'rgba(88,129,87,0.2)' : 'rgba(163,196,160,0.1)';
+    ctx.lineWidth=1; ctx.stroke();
+  }
+  for (var i=0; i<N; i++) {
+    ctx.beginPath(); ctx.moveTo(p.cx,p.cy);
+    ctx.lineTo(p.cx+p.maxR*Math.cos(startOff+i*slice), p.cy+p.maxR*Math.sin(startOff+i*slice));
+    ctx.strokeStyle='rgba(88,129,87,0.22)'; ctx.lineWidth=1; ctx.stroke();
+  }
+
+  var overlays = [
+    { key:'gp',       fill:'rgba(88,129,87,0.18)',  stroke:'#588157', lw:2.5 },
+    { key:'pharmacy', fill:'rgba(58,90,64,0.18)',   stroke:'#3A5A40', lw:2.5 },
+    { key:'patient',  fill:'rgba(163,196,160,0.28)',stroke:'#7aab77', lw:2.5 }
+  ];
+  overlays.forEach(function(o) {
+    ctx.beginPath();
+    for (var i=0; i<N; i++) {
+      var ang = startOff+i*slice+slice/2;
+      var rad = (scores[o.key][i]/10)*p.maxR;
+      var x = p.cx+rad*Math.cos(ang), y = p.cy+rad*Math.sin(ang);
+      if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.fillStyle=o.fill; ctx.fill();
+    ctx.strokeStyle=o.stroke; ctx.lineWidth=o.lw; ctx.stroke();
+  });
+
+  var sharedDims = ['Referral / pathway','Communication','Workload / revenue','Patient experience','Confidence','Relationships','Awareness / sustainability','Capacity'];
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  var lr = p.maxR+38;
+  sharedDims.forEach(function(d,i) {
+    var ang = startOff+i*slice+slice/2;
+    var x=p.cx+lr*Math.cos(ang), y=p.cy+lr*Math.sin(ang);
+    ctx.font='bold 8px Arial,sans-serif'; ctx.fillStyle='#3A5A40';
+    var words=d.split(/\s*\/\s*|\s+/);
+    if (words.length>2) {
+      var m=Math.ceil(words.length/2);
+      ctx.fillText(words.slice(0,m).join(' '),x,y-5);
+      ctx.fillText(words.slice(m).join(' '),x,y+5);
+    } else if (words.length===2) {
+      ctx.fillText(words[0],x,y-5); ctx.fillText(words[1],x,y+5);
+    } else { ctx.fillText(words[0],x,y); }
+  });
+  ctx.beginPath(); ctx.arc(p.cx,p.cy,3,0,2*Math.PI); ctx.fillStyle='#3A5A40'; ctx.fill();
+}
+
+function buildSummaryCards() {
+  var cont = document.getElementById('summary-cards');
+  cont.innerHTML = '';
+  var groups = ['gp','pharmacy','patient'];
+  var labels = ['General Practice','Community Pharmacy','Patient'];
+  groups.forEach(function(k,gi) {
+    var card = document.createElement('div'); card.className='summary-card';
+    var title = document.createElement('div'); title.className='summary-card-title'; title.textContent=labels[gi];
+    card.appendChild(title);
+    GROUPS[k].segments.forEach(function(seg,i) {
+      var row = document.createElement('div'); row.className='summary-item';
+      var s = scores[k][i];
+      var col = s<=4 ? '#8B1A1A' : s>=8 ? '#3A5A40' : '#3D3D3D';
+      var dim = document.createElement('span'); dim.className='summary-dim'; dim.textContent=seg.name;
+      var sc  = document.createElement('span'); sc.className='summary-score'; sc.style.color=col; sc.textContent=s;
+      row.appendChild(dim); row.appendChild(sc);
+      card.appendChild(row);
+    });
+    cont.appendChild(card);
+  });
+}
+
+function buildAlignment() {
+  var out = document.getElementById('alignment-output');
+  out.innerHTML = '';
+  var items = [];
+
+  var gpComm=scores.gp[3], phComm=scores.pharmacy[3];
+  var commDiff=Math.abs(gpComm-phComm);
+  if (commDiff>=3) {
+    items.push({tag:'gap',label:'Gap',text:'<strong>Communication:</strong> GP practices score this at '+gpComm+'/10, pharmacies at '+phComm+'/10. The two groups are experiencing information flow very differently – this is a priority to surface and explore in Workshop 1.'});
+  } else if (gpComm>=7 && phComm>=7) {
+    items.push({tag:'agree',label:'Aligned',text:'<strong>Communication:</strong> Both GP practices ('+gpComm+') and pharmacies ('+phComm+') rate communication highly – a genuine shared strength to build the programme on.'});
+  } else {
+    items.push({tag:'opportunity',label:'Opportunity',text:'<strong>Communication:</strong> Neither group scores this strongly (GP '+gpComm+', Pharmacy '+phComm+'). Improving information flow between practice and pharmacy is a concrete, achievable win.'});
+  }
+
+  var gpRel=scores.gp[6], phRel=scores.pharmacy[7], patRel=scores.patient[5];
+  var relAvg=((gpRel+phRel+patRel)/3);
+  var relTag = relAvg<5 ? 'gap' : relAvg>=7 ? 'agree' : 'opportunity';
+  var relLabel = relAvg<5 ? 'Gap' : relAvg>=7 ? 'Aligned' : 'Opportunity';
+  var relText = relAvg<5 ? 'Relationships are fragile across the system. This needs to be the primary focus of the workshop programme – particularly the connect and trust-building elements in Workshop 1.'
+    : relAvg>=7 ? 'Strong relational foundations exist across all three groups. Use this to move quickly into process improvement rather than spending time on trust-building.'
+    : 'Relationships are functional but not yet a real strength. Investing in connection – both structured and informal – will accelerate everything else in the programme.';
+  items.push({tag:relTag,label:relLabel,text:'<strong>Relationships:</strong> Average cross-group score is '+relAvg.toFixed(1)+'/10. '+relText});
+
+  var patAware=scores.patient[0];
+  if (patAware<=4) {
+    items.push({tag:'gap',label:'Gap',text:'<strong>Patient awareness:</strong> Patients score awareness at '+patAware+'/10. Even if the clinical pathway is working, patients are not finding their way to it. Consider co-designing a communications plan as part of the programme.'});
+  } else if (patAware>=7) {
+    items.push({tag:'agree',label:'Aligned',text:'<strong>Patient awareness:</strong> Patients score awareness at '+patAware+'/10 – the pathway is visible and well understood. This is not a barrier to uptake.'});
+  } else {
+    items.push({tag:'opportunity',label:'Opportunity',text:'<strong>Patient awareness:</strong> Scored at '+patAware+'/10 – meaningful headroom to improve how patients learn about Pharmacy First as an option, without this being a crisis.'});
+  }
+
+  var gpWork=scores.gp[2], phRev=scores.pharmacy[2];
+  if (gpWork>=7 && phRev<=4) {
+    items.push({tag:'gap',label:'Gap',text:'<strong>Value imbalance:</strong> GP practices report good workload relief ('+gpWork+'/10) while pharmacies rate revenue viability at just '+phRev+'/10. This asymmetry in perceived benefit may be quietly undermining pharmacy motivation – it needs naming directly in the programme.'});
+  } else if (gpWork>=6 && phRev>=6) {
+    items.push({tag:'agree',label:'Aligned',text:'<strong>Shared value:</strong> Both GP practices (workload relief '+gpWork+'/10) and pharmacies (revenue viability '+phRev+'/10) report meaningful benefit from Pharmacy First – a positive platform to build from.'});
+  } else {
+    items.push({tag:'opportunity',label:'Opportunity',text:'<strong>Value realisation:</strong> GP workload relief ('+gpWork+'/10) and pharmacy viability ('+phRev+'/10) both have room to grow. The programme can help both parties get more from the arrangement.'});
+  }
+
+  var patQual=scores.patient[3], patOut=scores.patient[6];
+  if (patQual>=7 && patOut>=7) {
+    items.push({tag:'agree',label:'Aligned',text:'<strong>Patient outcomes:</strong> Patients rate quality of care at '+patQual+'/10 and outcome satisfaction at '+patOut+'/10 – strong clinical credibility from the patient perspective.'});
+  } else if (patQual<=4 || patOut<=4) {
+    items.push({tag:'gap',label:'Gap',text:'<strong>Patient outcomes:</strong> Low scores on quality of care ('+patQual+'/10) or outcome satisfaction ('+patOut+'/10) suggest the patient experience of Pharmacy First needs direct attention as part of this programme.'});
+  } else {
+    items.push({tag:'opportunity',label:'Opportunity',text:'<strong>Patient outcomes:</strong> Reasonable but not strong scores on quality ('+patQual+'/10) and outcomes ('+patOut+'/10). Sharing examples of excellent patient experience across the PCN could raise both.'});
+  }
+
+  items.forEach(function(item) {
+    var row = document.createElement('div'); row.className='align-row';
+    var tag = document.createElement('span'); tag.className='align-tag tag-'+item.tag; tag.textContent=item.label;
+    var cnt = document.createElement('div'); cnt.className='align-content'; cnt.innerHTML=item.text;
+    row.appendChild(tag); row.appendChild(cnt);
+    out.appendChild(row);
+  });
+}
+
+function switchTab(key, btn) {
+  document.querySelectorAll('.wheel-page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('page-'+key).classList.add('active');
+  btn.classList.add('active');
+  if (key==='summary') {
+    setTimeout(function(){ drawCompare(); buildSummaryCards(); buildAlignment(); }, 30);
+  } else {
+    setTimeout(function(){ drawWheel(key); }, 30);
+  }
+}
+
+var today = new Date().toISOString().split('T')[0];
+['gp','pharmacy','patient'].forEach(function(k) {
+  var d = document.getElementById('date-'+k);
+  if (d) d.value = today;
+  buildSliders(k);
+  drawWheel(k);
+});
+
+})();
+</script>
+</body>
+</html>
