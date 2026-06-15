@@ -226,10 +226,10 @@ footer {
   </div>
 
   <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('gp', this)">General Practice</button>
-    <button class="tab" onclick="switchTab('pharmacy', this)">Community Pharmacy</button>
-    <button class="tab" onclick="switchTab('patient', this)">Patient</button>
-    <button class="tab summary-tab" onclick="switchTab('summary', this)">&#8853; Summary &amp; Comparison</button>
+    <button id="tab-gp" class="tab active">General Practice</button>
+    <button id="tab-pharmacy" class="tab">Community Pharmacy</button>
+    <button id="tab-patient" class="tab">Patient</button>
+    <button id="tab-summary" class="tab summary-tab">&#8853; Summary &amp; Comparison</button>
   </div>
 
   <!-- GP -->
@@ -604,17 +604,22 @@ function buildAlignment() {
   });
 }
 
-function switchTab(key, btn) {
+function switchTab(key) {
   document.querySelectorAll('.wheel-page').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('page-'+key).classList.add('active');
-  btn.classList.add('active');
+  document.getElementById('tab-'+key).classList.add('active');
   if (key==='summary') {
     setTimeout(function(){ drawCompare(); buildSummaryCards(); buildAlignment(); }, 30);
   } else {
     setTimeout(function(){ drawWheel(key); }, 30);
   }
 }
+
+document.getElementById('tab-gp').addEventListener('click', function(){ switchTab('gp'); });
+document.getElementById('tab-pharmacy').addEventListener('click', function(){ switchTab('pharmacy'); });
+document.getElementById('tab-patient').addEventListener('click', function(){ switchTab('patient'); });
+document.getElementById('tab-summary').addEventListener('click', function(){ switchTab('summary'); });
 
 var today = new Date().toISOString().split('T')[0];
 ['gp','pharmacy','patient'].forEach(function(k) {
